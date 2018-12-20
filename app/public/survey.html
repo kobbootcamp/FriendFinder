@@ -297,7 +297,7 @@
         </div>
 
 
-
+        <!--Submit Button-->
         <div class="row">
 
             <div class="col-md-1"> </div>
@@ -312,7 +312,7 @@
             <div class="col-md-1"> </div>
         </div>
 
-
+        <!--Footer with api/friends and git hub link-->
         <div class="row">
             <div class="col-md-1"> </div>
             <div class="col-md-12">
@@ -371,30 +371,24 @@
 
 <script type="text/javascript">
 
-
-
     var modal = document.getElementById("myModal");
 
 
+    //Clear and close the modal form
     $("#closeBtn").click(function () {
         modal.style.display = "none";
         $(".modal-body").empty();
     });
-    // When the user clicks on <span> (x), close the modal
-    modal.onclick = function () {
-        modeal.stye.dispaly = "none";
-    }
-    // span.onclick = function () {
-    //     myModal.style.display = "none";
-    // }
 
+
+    //submit button
     $("#submitButton").click(function () {
         event.preventDefault();
 
 
-        //check that the user provided all the answers
+        //STEP 1: check that the user provided all the answers
 
-        //check the form
+        //check the form has been completed
         function validateForm() {
             var isValid = true;
 
@@ -418,8 +412,10 @@
 
 
 
-        //if all the blanks are filled in
+        //if all the blanks are filled in, create an object with the scores
         if (validateForm()) {
+
+            //new friend object
             var newFriend = {
                 name: $("#name").val(),
                 photo: $("#photo").val(),
@@ -446,11 +442,11 @@
             }
             newFriend.total = sum;
 
+            //post the new friend to the api/friends page
             $.post("/api/friends", newFriend).then(function (data) {
 
-                // alert("friend added with a score of " + sum)
+                //once the score has been recieved find the matching friend
                 findMatch(sum);
-
 
             })
 
@@ -459,26 +455,33 @@
             //determine the other friend with the closest score
             function findMatch(sum) {
 
+                //get the other friends
                 $.ajax({ url: "/api/friends", method: "GET" }).then(function (friends) {
+
+                    //declare variables for finding match
                     var matchscore = 0;
                     var lowscore = 40;
                     var match = "";
+
+                    //for each other friend, find the lowest difference in total score (using absolute values)
                     for (var i = 0; i < friends.length - 1; i++) {
                         matchscore = Math.abs(parseInt(sum) - parseInt(friends[i].total));
                         if (matchscore < lowscore) {
                             lowscore = matchscore;
                             match = i;
                         }
-
                     }
 
+                    //append the matched results to the modal div
                     $(".modal-body").append("You are matched with " + friends[match].name + ".\n");
 
+                    //append the photo of that matched friend
                     $("<img />")
                         .attr("src", "" + friends[match].photo + "")
                         .width("50%").height("50%")
                         .appendTo($(".modal-body"));
 
+                    //style setting for the modal form, and show the form
                     modal.style.textAlign = "center"
                     modal.style.fontSize = "24px";
                     modal.style.display = "block";
